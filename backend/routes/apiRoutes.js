@@ -1,10 +1,17 @@
 import express from 'express';
-import router from "./productRoutes.js";
+import productRoutes from "./productRoutes.js";
+import categoryRoutes from './categoryRoutes.js';
+import userRoutes from './userRoutes.js';
+import orderRoutes from './orderRoutes.js';
+
 
 
 const apiRoutes = express();
 
-apiRoutes.use("/products", router);
+apiRoutes.use("/products", productRoutes);
+apiRoutes.use("/categories", categoryRoutes);
+apiRoutes.use("/users", userRoutes);
+apiRoutes.use("/orders", orderRoutes);
 
 export default apiRoutes;
 
