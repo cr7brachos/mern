@@ -9,7 +9,7 @@ const orderSchema = mongoose.Schema({
     },
     orderTotal: {
         itemsCount: {type: Number, required: true},
-        cardSubTotal:{type: Number, required: true},
+        cartSubTotal:{type: Number, required: true},
         cartItems: [
             {
                 name: {type: String, required: true},
@@ -33,7 +33,7 @@ const orderSchema = mongoose.Schema({
     paidAt: {type: Date},
     isDelivered: {type: Boolean, required: true, default: false}
     },
-    delivereAt: {type: Date}
+    deliveredAt: {type: Date}
 }, {timestamps: true});
 
 const Order = mongoose.model("Order", orderSchema);
