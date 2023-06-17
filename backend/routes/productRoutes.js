@@ -3,7 +3,8 @@ import getProducts, {getProductById,
                     getBestsellers, 
                     adminGetProducts, 
                     adminDeleteProduct,
-                    adminCreateProduct} from '../controllers/productController.js';
+                    adminCreateProduct,
+                    adminUpdateProduct} from '../controllers/productController.js';
 
 const productRoutes = express.Router();
 
@@ -16,8 +17,11 @@ productRoutes.get("/get-one/:id", getProductById);
 
 //admin
 productRoutes.get("/admin", adminGetProducts);
-productRoutes.delete("/admin/:id", adminDeleteProduct);
 productRoutes.post("/admin", adminCreateProduct);
+productRoutes.delete("/admin/:id", adminDeleteProduct);
+productRoutes.put("/admin/:id", adminUpdateProduct);
+
+
 
 
 export default productRoutes;
