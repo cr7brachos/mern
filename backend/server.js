@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import apiRoutes from "./routes/apiRoutes.js";
 import connectDB from "./config/db.js";
+import fileUpload from "express-fileupload";
 
 
 
@@ -10,6 +11,7 @@ const app = express();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
 app.use(express.json()); //χρειάζεται προκειμένου το  express να μπορει να διαχειριστεί json data
+app.use(fileUpload()); //χρειάζεται για το ανέβασμα αρχείων 
 
 app.get("/", (req, res, next)=>{
     res.json({message: "API is running"});

@@ -4,7 +4,9 @@ import getProducts, {getProductById,
                     adminGetProducts, 
                     adminDeleteProduct,
                     adminCreateProduct,
-                    adminUpdateProduct} from '../controllers/productController.js';
+                    adminUpdateProduct, 
+                    adminUpload,
+                    adminDeleteProductImage} from '../controllers/productController.js';
 
 const productRoutes = express.Router();
 
@@ -19,8 +21,9 @@ productRoutes.get("/get-one/:id", getProductById);
 productRoutes.get("/admin", adminGetProducts);
 productRoutes.post("/admin", adminCreateProduct);
 productRoutes.delete("/admin/:id", adminDeleteProduct);
+productRoutes.delete("admin/image/:imagePath/:productId", adminDeleteProductImage)
 productRoutes.put("/admin/:id", adminUpdateProduct);
-
+productRoutes.post("/admin/upload", adminUpload)
 
 
 

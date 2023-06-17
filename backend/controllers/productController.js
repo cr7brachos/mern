@@ -1,5 +1,9 @@
 import recordsPerPage from "../config/pagination.js";
 import Product from "../models/productModel.js";
+import imageValidate from "../utils/imageValidate.js";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
 
 
 const getProducts = async (req, res, next) => {
@@ -271,5 +275,90 @@ const adminUpdateProduct = async (req, res, next) => {
     }
 };
 
+const adminUpload = async (req, res, next) => {
+    try {
+        
+        if (!req.files || !!req.files.images === false) {
+            return res.status(400).send("no files were uploaded");
+        }
+
+        //τσεκάρει εάν είναι όλα σύμφωνα με το image validation
+        const validateResults = imageValidate(req.files.images);
+        if (validateResults.error) {
+            return res.status(400).send(validateResults.error);
+        };
+
+        //φτιάχνει το upload directory
+        const uploadDirectory = path.resolve(__dirname, "../../frontend", "public", "images", "products");
+
+        let product = await Product.findById(req.query.productId).orFail(); //βρίσκουμε προϊόν με βάση το id
+
+        let imagesTable = [];
+        if (Array.isArray(req.files.images)) { //εάν έχουμε ανεβάσει περισσότερες από μια φωτογραφίες τότε έχουμε πίνακα με φωτογραφίες
+            imagesTable = req.files.images;
+        } else {
+            imagesTable.push(req.files.images);
+        }
+
+        //για τη κάθε εικόνα τη κάνει move στο uploadDirectory + τυχαίο όνομα + το extension του αρχικού αρχείου
+        imagesTable.forEach(image => {
+
+            var fileName = uuidv4() + path.extname(image.name);
+            var uploadPath = uploadDirectory + "/" + fileName;
+            product.images.push({ path: "/images/products" + fileName });
+            image.mv(uploadPath, function(err){
+                if (err) {
+                    return res.status(500).send(err);
+                }
+            })
+
+        });
+
+        await product.save();
+        return res.send("Files uploaded");
+
+    } catch (error) {
+        
+        next(error)
+
+    }
+};
+
+const adminDeleteProductImage = async (req, res, next) => {
+
+    try {
+
+        const imagePath = decodeURIComponent(req.params.imagePath);
+        const finalPath = path.resolve("../frontend/public") + imagePath;
+
+        //διαγράφει το αρχείο που βρίσκεται στο finalPath
+        fs.unlink(finalPath, (err)=>{
+            if (err) {
+                res.status(500).send(err);
+            }
+        });
+
+        //βρίσκει προϊόν και κατόπιν από το προϊόν πετάει έξω το path που έχουμε δώσει
+        await Product.findOneAndUpdate({ _id: req.params.productId }, { $pull: {images: {path: imagePath}} }).orFail();
+
+        return res.end();
+        
+    } catch (error) {
+        next(error)
+    }
+
+    
+}
+
+
 export default getProducts;
-export { getProductById, getBestsellers, adminGetProducts, adminDeleteProduct, adminCreateProduct, adminUpdateProduct};
+
+export {    getProductById, 
+            getBestsellers, 
+            adminGetProducts, 
+            adminDeleteProduct, 
+            adminCreateProduct, 
+            adminUpdateProduct, 
+            adminUpload,
+            adminDeleteProductImage
+        };
