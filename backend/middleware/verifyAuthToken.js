@@ -26,4 +26,20 @@ const verifyIsLoggedIn = async (req, res, next) => {
     }
 };
 
+const verifyIsAdmin = async (req, res, next) => {
+    try {
+
+        if (req.user && req.user.isAdmin) {
+            next();
+        } else {
+            return res.status(401).send("this user is not admin")
+        }
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
 export default verifyIsLoggedIn;
+
+export { verifyIsAdmin };

@@ -7,7 +7,7 @@ import getProducts, {getProductById,
                     adminUpdateProduct, 
                     adminUpload,
                     adminDeleteProductImage} from '../controllers/productController.js';
-import verifyIsLoggedIn from '../middleware/verifyAuthToken.js';
+import verifyIsLoggedIn, { verifyIsAdmin } from '../middleware/verifyAuthToken.js';
 
 const productRoutes = express.Router();
 
@@ -20,6 +20,7 @@ productRoutes.get("/get-one/:id", getProductById);
 
 //admin
 productRoutes.use(verifyIsLoggedIn); //πρώτα εκτελείται αυτό που ελέγχει εάν ο User είναι LoggedIn
+productRoutes.use(verifyIsAdmin); //ελέγχει εάν ο χρήστης είναι admin
 productRoutes.get("/admin", adminGetProducts);
 productRoutes.post("/admin", adminCreateProduct);
 productRoutes.delete("/admin/:id", adminDeleteProduct);

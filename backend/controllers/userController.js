@@ -4,11 +4,12 @@ import generateAuthToken from "../utils/generateAuthToken.js";
 
 
 
+
 const getUsers = async (req, res, next) => {
     
     try {
 
-        const users = await User.find({}).select("-password");
+        const users = await User.find({}).select();
         return res.json(users);
         
     } catch (error) {
@@ -94,7 +95,56 @@ const loginUser = async (req, res, next) => {
     }
 }
 
+const updateUserProfile = async (req, res, next) => {
+    try {
+
+        //req.user ορίζεται από το verifyAuthToken στη γραμμή 16
+        const user = await User.findById(req.user._id).orFail(); //βρίσκω το χρήστη με βάση το id
+        console.log(user.name);
+
+        user.name = req.body.name || user.name;
+        user.lastName = req.body.lastName || user.lastName;
+        user.email = req.body.email || user.email;
+        user.phoneNumber = req.body.phoneNumber;
+        user.address = req.body.address;
+        user.country = req.body.country;
+        user.zipCode = req.body.zipCode;
+        user.city = req.body.city;
+        user.state = req.body.state;
+
+        if (req.body.password !== user.password) {
+            user.password = hashPassword(req.body.password);
+        }
+        await user.save();
+
+        res.json({
+            success: "user succesfully updated",
+            userUpdated: {
+                _id: user._id,
+                name: user.name,
+                lastName: user.lastName,
+                email: user.email,
+                isAdmin: user.isAdmin
+            }
+        })
+        
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getUserProfile = async (req, res, next) => {
+    try {
+        
+        const user = await User.findById(req.params.id).orFail();
+        return res.send(user);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 export default getUsers;
 
-export { registerUser, loginUser };
+export { registerUser, loginUser, updateUserProfile, getUserProfile };
