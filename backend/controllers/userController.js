@@ -1,6 +1,9 @@
 import User from "../models/userModel.js";
 import hashPassword, { comparePasswords } from "../utils/hashPasswords.js";
 import generateAuthToken from "../utils/generateAuthToken.js";
+import mongoose from "mongoose";
+import Review from "../models/reviewModel.js";
+import Product from "../models/productModel.js";
 
 
 
@@ -144,7 +147,129 @@ const getUserProfile = async (req, res, next) => {
     }
 }
 
+const writeReview = async (req, res, next) => {
+    try {
+
+        const session = await Review.startSession(); //σρχή του session
+
+        //get comment and rating from request body
+
+        const { comment, rating } = req.body; //destructuring
+
+        //validate request
+        if (!(comment && rating)) {
+            return res.status(400).send("all inputs are required");
+        }
+
+        //create review id manually because it is needed also for saving in Product collection
+        let reviewId = new mongoose.Types.ObjectId(); //creates random id
+
+        session.startTransaction(); //πριν την πρώτη ενέργεια στη βάση
+
+        await Review.create([
+            {
+                _id: reviewId,
+                comment: comment,
+                rating: Number(rating), //cast text to Number
+                user: {
+                    _id: req.user._id,
+                    name: req.user.name + " " + req.user.lastName,
+                },
+            }
+        ], {session: session}); //βάζουμε το session ως παράμετρο, κι έτσι το Review.create, είναι μέρος του transaction
+        
+        const product = await Product.findById(req.params.productId).populate("reviews").session(session); //το ίδιο με πιο πάνω
+        //res.send(product);
+
+        const alreadyReviewed = product.reviews.find((r) => r.user._id.toString() === req.user._id.toString());
+        if(alreadyReviewed) {
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(400).send("product already reviewed"); 
+        }
+
+        let prc = [...product.reviews];
+        prc.push({ rating: rating });
+        product.reviews.push(reviewId);
+
+        if (product.reviews.length === 1) {
+            product.rating = Number(rating);
+            product.reviewsNumber = 1;
+        } else {
+            product.reviewsNumber = product.reviews.length;
+            //το map παράγει νέο πίνακα με μόνο τις τιμές από το item.rating
+            //κατόπιν το reduce ξεκινάει με sum=0 και κάνει τις πράξεις
+            product.rating = prc.map((item)=> Number(item.rating))
+                                .reduce((sum, item) => sum + item, 0) / product.reviews.length;
+
+        }
+
+        await product.save();
+        await session.commitTransaction(); //εάν όλα έχουν πάει καλά
+        session.endSession();
+        res.send("review created");
+
+    } catch (error) {
+        await session.abortTransaction();
+        next(error);
+    }
+}
+
+
+const getUser = async (req, res, next) => {
+    try {
+        //με τη select διαλέγουμε ποια πεδία θέλουμε να βλέπουμε
+        const user = await User.findById(req.params.id).select("name lastName email isAdmin").orFail();
+        return res.send(user);
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
+const updateUser = async (req, res, next) => {
+    try {
+        
+        const user = await User.findById(req.params.id).orFail();
+
+        user.name = req.body.name || user.name;
+        user.lastName = req.body.lastName || user.lastName;
+        user.email = req.body.email || user.email;
+        user.isAdmin = req.body.isAdmin || user.isAdmin; 
+        
+        await user.save();
+        res.json({
+            message: "user updated",
+            user: user
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+const deleteUser = async (req, res, next) => {
+
+    try {
+        
+        await User.findByIdAndRemove(req.params.id).orFail();
+
+        // await user.remove();
+        res.json({message:"user removed"});
+
+    } catch (error) {
+        next(error);
+    }
+
+}
 
 export default getUsers;
 
-export { registerUser, loginUser, updateUserProfile, getUserProfile };
+export { registerUser, 
+        loginUser, 
+        updateUserProfile, 
+        getUserProfile, 
+        writeReview, 
+        getUser, 
+        updateUser,
+        deleteUser };
