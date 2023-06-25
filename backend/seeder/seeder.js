@@ -43,25 +43,34 @@ const importData = async () => {
         await User.collection.deleteMany({});
         await Order.collection.deleteMany({});
 
-        await Category.insertMany(categories);
-        await User.insertMany(users);
-        await Order.insertMany(orders);
-        
-        const reviewRef = await Review.insertMany(reviews);
-        const sampleProducts = products.map((product)=>{
-            reviewRef.map((item)=> {
-                product.reviews.push(item._id)
-            })
-            return {...product}
-        });
+        if (process.argv[2] !== "-d") {
+
+            await Category.insertMany(categories);
+            await User.insertMany(users);
+            await Order.insertMany(orders);
+            
+            const reviewRef = await Review.insertMany(reviews);
+            const sampleProducts = products.map((product)=>{
+                reviewRef.map((item)=> {
+                    product.reviews.push(item._id)
+                })
+                return {...product}
+            });
+
+            
+
+            await Product.insertMany(sampleProducts);
+            
+
+            console.log("Seeder data imported succesfuly");
+            process.exit();
+
+        } else {
+            console.log("data deleted succesfuly");
+            process.exit();
+        }
 
         
-
-        await Product.insertMany(sampleProducts);
-        
-
-        console.log("Seeder data proceeded succesfuly");
-        process.exit();
     } catch (error) {
         console.log(error, "something went wrong");
         process.exit(1);

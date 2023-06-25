@@ -13,8 +13,10 @@ import ProductListComponent from "../ProductListComponent";
 import PaginationComponent from "../PaginationComponent";
 import CategoryFilterComponent from "../CategoryFilterComponent";
 import AttributesFilterComponent from "../AttributesFilterComponent";
+import axios from "axios";
 
 const ProductListGroup = () => {
+    axios.get("/api/products").then((res)=>console.log(res));
   return (
 
     <Container fluid>
