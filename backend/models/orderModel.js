@@ -10,17 +10,22 @@ const orderSchema = mongoose.Schema({
     orderTotal: {
         itemsCount: {type: Number, required: true},
         cartSubTotal:{type: Number, required: true},
-        cartItems: [
-            {
-                name: {type: String, required: true},
-                price: {type: Number, required: true},
-                image: {
-                    path: {type: String, required: true}
-                },
-                quantity: {type: Number, required: true},
-                count: {type: Number, required: true},
-            }
-        ],
+        },
+    cartItems: [
+        {
+            name: {type: String, required: true},
+            price: {type: Number, required: true},
+            image: {
+                path: {type: String, required: true}
+            },
+            quantity: {type: Number, required: true},
+            count: {type: Number, required: true},
+        }
+    ],
+    paymentMethod: {
+        type: String,
+        required: true,
+    },
     transactionResults: {
         status: {type: String},
         amount: {type: Number},
@@ -31,8 +36,7 @@ const orderSchema = mongoose.Schema({
         default: false
     },
     paidAt: {type: Date},
-    isDelivered: {type: Boolean, required: true, default: false}
-    },
+    isDelivered: {type: Boolean, required: true, default: false},
     deliveredAt: {type: Date}
 }, {timestamps: true});
 
