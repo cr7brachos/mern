@@ -16,7 +16,7 @@ import AttributesFilterComponent from "../AttributesFilterComponent";
 import axios from "axios";
 
 const ProductListGroup = () => {
-    axios.get("/api/products").then((res)=>console.log(res));
+    //axios.get("/api/products").then((res)=>console.log(res));
   return (
 
     <Container fluid>

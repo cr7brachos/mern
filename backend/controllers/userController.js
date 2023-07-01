@@ -255,7 +255,7 @@ const deleteUser = async (req, res, next) => {
         await User.findByIdAndRemove(req.params.id).orFail();
 
         // await user.remove();
-        res.json({message:"user removed"});
+        res.send("user removed");
 
     } catch (error) {
         next(error);

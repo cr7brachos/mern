@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 
 
 const verifyIsLoggedIn = async (req, res, next) => {
+    next();
+    return // to do: remove later 
     try {
         
         const token = req.cookies.access_token;
@@ -27,17 +29,19 @@ const verifyIsLoggedIn = async (req, res, next) => {
 };
 
 const verifyIsAdmin = async (req, res, next) => {
-    try {
+    next();
+    return //to do: remove later
+    // try {
 
-        if (req.user && req.user.isAdmin) {
-            next();
-        } else {
-            return res.status(401).send("this user is not admin")
-        }
+    //     if (req.user && req.user.isAdmin) {
+    //         next();
+    //     } else {
+    //         return res.status(401).send("this user is not admin")
+    //     }
         
-    } catch (error) {
-        next(error);
-    }
+    // } catch (error) {
+    //     next(error);
+    // }
 }
 
 export default verifyIsLoggedIn;
