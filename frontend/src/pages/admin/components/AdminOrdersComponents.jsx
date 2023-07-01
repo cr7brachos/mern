@@ -44,7 +44,8 @@ const AdminOrdersComponents = ({fetchAdminOrder}) => {
                                     return (
                                         <tr key={idx}>
                                             <td>{idx+1}</td>
-                                            <td>{order?.user?.name}</td>
+                                            {/* το ? ελεγχει εάν το object υπάρχει ή είναι null */}
+                                            <td>{order.user?.name ? order.user.name : "null"}</td> 
                                             <td>{order.createdAt.substring(0, 10)}</td>
                                             <td>{order.orderTotal.cartSubTotal}</td>
                                             <td>
