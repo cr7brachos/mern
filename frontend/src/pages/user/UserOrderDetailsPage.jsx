@@ -48,7 +48,8 @@ const UserOrderDetailsPage = () => {
 
                         {Array.from({length:3}).map((item, idx)=>{
                             return (
-                                <CartItemComponent key={idx} />    
+                                <CartItemComponent key={idx} item={{image: {path:""}, 
+                                name: "Product name", price:10, count:10, quantity:10}}/>    
                             )
                         })}
 

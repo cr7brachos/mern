@@ -13,8 +13,9 @@ const AdminOrdersComponents = ({fetchAdminOrder}) => {
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        fetchAdminOrder().then( res => setOrders(res)).catch(err => console.log(err));
-        
+        const abctrl = new AbortController();
+        fetchAdminOrder(abctrl).then( res => setOrders(res)).catch(err => console.log(err));
+        return () => abctrl.abort;
     },[]);
 
    console.log(orders);
@@ -49,11 +50,12 @@ const AdminOrdersComponents = ({fetchAdminOrder}) => {
                                             <td>{order.createdAt.substring(0, 10)}</td>
                                             <td>{order.orderTotal.cartSubTotal}</td>
                                             <td>
-                                                <FontAwesomeIcon icon={faCheck} className="text-success"/> 
+                                            {order.isDelivered ? <FontAwesomeIcon icon={faCheck} className="text-success"/> : <FontAwesomeIcon icon={faX} className="text-danger"/>}
+                                                 
                                             </td>
-                                            <td>PayPal</td>
+                                            <td>PayPal </td>
                                             <td>
-                                                <Link to="/admin/order-details">go to order details</Link>
+                                                <Link to={`/admin/order-details/${order._id}`}>go to order details</Link>
                                             </td>
                                         </tr>
                                     )

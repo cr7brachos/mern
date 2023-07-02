@@ -20,7 +20,8 @@ const CartPage = () => {
                             <>
                             
                             <ListGroup variant="flush" key={idx}>
-                                <CartItemComponent />
+                                <CartItemComponent item={{image: {path:""}, 
+                                name: "Product name", price:10, count:10, quantity:10}}/>
                             </ListGroup>
                             
                             </>
