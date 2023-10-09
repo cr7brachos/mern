@@ -9,27 +9,34 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark, faCommentDots, faTrash } from '@fortawesome/free-solid-svg-icons';
  
 
-const CartItemComponent = () => {
+const CartItemComponent = ({item, orderCreated=false}) => {
     return (
         <>
             <ListGroupItem>
                 <Row>
                     <Col md={2}>
-                        <Image src="/images/carousel/GBP.jpg" fluid crossOrigin="anonynous"/>
+                        <Image src={item.image ? (item.image.path ?? null) : null} 
+                                fluid 
+                                crossOrigin="anonynous"/>
                     </Col>
                     <Col md={2}>
-                        Logotech series <br />
-                        Gaming mouse
+                        {item.name} <br />
+                        
                     </Col>
                     <Col md={2}>
-                        <b>€56</b>
+                        <b>€{item.price}</b>
                     </Col>
                     <Col md={3}>
-                    <Form.Select aria-label="Default select example">
+                    <Form.Select aria-label="Default select example" 
+                                    disabled = {orderCreated}
+                                    value={item.quantity}
+                                    onChange={()=>{}}>
                         {/* <option>Open this select menu</option> */}
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
+                        { [...Array(item.count).keys()].map((x) => (
+                            <option value={x+1}>{x+1}</option>
+                        )) }
+                        
+                        
                     </Form.Select>
                     </Col>
                     <Col md={3}>

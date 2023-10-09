@@ -63,12 +63,13 @@ const loginUser = async (req, res, next) => {
     try {
 
         const { email, password, doNotLogout } = req.body;
+        console.log(email, password, doNotLogout);
 
         if (!(email && password)) {
             return res.status(400).send("all inputs are required");
         }
 
-        const user = await User.findOne({email});
+        const user = await User.findOne({email}).orFail();
         console.log(user);
         if (user && comparePasswords(password, user.password)) { //compare passwords
             let cookieParams = { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict" }
@@ -255,7 +256,7 @@ const deleteUser = async (req, res, next) => {
         await User.findByIdAndRemove(req.params.id).orFail();
 
         // await user.remove();
-        res.json({message:"user removed"});
+        res.send("user removed");
 
     } catch (error) {
         next(error);
