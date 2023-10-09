@@ -13,7 +13,7 @@ const productRoutes = express.Router();
 
 productRoutes.get("/", getProducts);
 productRoutes.get("/category/:categoryName", getProducts);
-productRoutes.get("/category/:categoryName/search/:searchQuery"), getProducts;
+productRoutes.get("/category/:categoryName/search/:searchQuery", getProducts);
 productRoutes.get("/search/:searchQuery", getProducts);
 productRoutes.get("/bestsellers", getBestsellers);
 productRoutes.get("/get-one/:id", getProductById);
